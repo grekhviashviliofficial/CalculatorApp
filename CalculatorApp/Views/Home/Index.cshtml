@@ -1,8 +1,94 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model CalculatorApp.Models.CalculatorViewModel
+
+@{
+    ViewData["Title"] = "Modern Calculator";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<style>
+    .calc-container {
+        max-width: 300px;
+        margin: 50px auto;
+        background-color: #333;
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0px 10px 20px rgba(0,0,0,0.3);
+    }
+
+    .display-screen {
+        width: 100%;
+        height: 60px;
+        background: #222;
+        color: #0f0;
+        text-align: right;
+        font-size: 32px;
+        border: none;
+        padding: 10px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        font-family: 'Courier New', Courier, monospace;
+    }
+
+    .btn-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+    }
+
+    .btn-grid button {
+        height: 60px;
+        border-radius: 10px;
+        border: none;
+        font-size: 1.2rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .btn-num { background: #eee; color: #333; }
+    .btn-op { background: #f39c12; color: white; }
+    .btn-clear { background: #e74c3c; color: white; grid-column: span 2; }
+    .btn-equal { background: #2ecc71; color: white; grid-column: span 2; }
+
+    button:hover { opacity: 0.8; }
+</style>
+
+<div class="calc-container">
+    <form method="post">
+        <!-- Persistent State (Hidden Fields) -->
+        <input type="hidden" asp-for="FirstValue" />
+        <input type="hidden" asp-for="SecondValue" />
+        <input type="hidden" asp-for="PendingOperation" />
+
+        <!-- Visible Screen -->
+        <input type="text" class="display-screen" value="@Model.Display" readonly />
+
+        <div class="btn-grid">
+            <!-- Row 1 -->
+            <button type="submit" name="action" value="C" class="btn-clear">AC</button>
+            <button type="submit" name="action" value="/" class="btn-op">÷</button>
+            <button type="submit" name="action" value="*" class="btn-op">×</button>
+
+            <!-- Row 2 -->
+            <button type="submit" name="action" value="7" class="btn-num">7</button>
+            <button type="submit" name="action" value="8" class="btn-num">8</button>
+            <button type="submit" name="action" value="9" class="btn-num">9</button>
+            <button type="submit" name="action" value="-" class="btn-op">-</button>
+
+            <!-- Row 3 -->
+            <button type="submit" name="action" value="4" class="btn-num">4</button>
+            <button type="submit" name="action" value="5" class="btn-num">5</button>
+            <button type="submit" name="action" value="6" class="btn-num">6</button>
+            <button type="submit" name="action" value="+" class="btn-op">+</button>
+
+            <!-- Row 4 -->
+            <button type="submit" name="action" value="1" class="btn-num">1</button>
+            <button type="submit" name="action" value="2" class="btn-num">2</button>
+            <button type="submit" name="action" value="3" class="btn-num">3</button>
+            <button type="submit" name="action" value="=" class="btn-equal">=</button>
+
+            <!-- Row 5 -->
+            <button type="submit" name="action" value="0" class="btn-num" style="grid-column: span 2;">0</button>
+            <button type="submit" name="action" value="." class="btn-num">.</button>
+        </div>
+    </form>
 </div>

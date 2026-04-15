@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using CalculatorApp.Models;
 
@@ -6,26 +5,86 @@ namespace CalculatorApp.Controllers;
 
 public class HomeController : Controller
 {
-    private readonly ILogger<HomeController> _logger;
-
-    public HomeController(ILogger<HomeController> logger)
-    {
-        _logger = logger;
-    }
-
+    [HttpGet]
     public IActionResult Index()
     {
-        return View();
+        return View(new CalculatorViewModel());
     }
 
-    public IActionResult Privacy()
+    [HttpPost]
+    public IActionResult Index(CalculatorViewModel model, string action)
     {
-        return View();
-    }
+        switch (action)
+        {
+            case "C":
+                model.FirstValue = "";
+                model.SecondValue = "";
+                model.PendingOperation = "";
+                model.Result = 0;
+                model.Display = "0";
+                break;
+            case "+":
+            case "-":
+            case "*":
+            case "/":
+                model.PendingOperation = action;
+                break;
+            case "=":
+                switch (model.PendingOperation)
+                {
+                    case "+":
+                        model.Result = decimal.Parse(model.FirstValue) + decimal.Parse(model.SecondValue);
+                        model.Display = model.Result.ToString();
+                        break;
+                    case "-":
+                        model.Result = decimal.Parse(model.FirstValue) - decimal.Parse(model.SecondValue);
+                        model.Display = model.Result.ToString();
+                        break;
+                    case "*":
+                        model.Result = decimal.Parse(model.FirstValue) * decimal.Parse(model.SecondValue);
+                        model.Display = model.Result.ToString();
+                        break;
+                    case "/":
+                        if (decimal.Parse(model.SecondValue) != 0)
+                        {
+                            model.Result = decimal.Parse(model.FirstValue) / decimal.Parse(model.SecondValue);
+                            model.Display = model.Result.ToString();
+                        }
+                        else
+                            model.Display = "Error";
+                        break;
+                }
+                model.FirstValue = model.Result.ToString();
+                model.SecondValue = "";
+                model.PendingOperation = "";
+                break;
+            default:
+                if (string.IsNullOrEmpty(model.FirstValue))
+                {
+                    model.FirstValue = action;
+                    model.Display = model.FirstValue;
+                    break;
+                }
+                else if (string.IsNullOrEmpty(model.PendingOperation))
+                {
+                    model.FirstValue += action;
+                    model.Display = model.FirstValue;
+                    break;
+                }
+                else if (string.IsNullOrEmpty(model.SecondValue))
+                {
+                    model.SecondValue = action;
+                    model.Display = model.SecondValue;
+                }
+                else
+                {
+                    model.SecondValue += action;
+                    model.Display = model.SecondValue;
+                }
+                break;
+        }
+        ModelState.Clear();
 
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        return View(model);
     }
 }
